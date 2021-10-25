@@ -16,7 +16,7 @@ function greetPerson(){
 
     //mirrorFace();
 
-    misty.TransitionLED(140, 0, 0, 0, 0, 140, "TransitOnce", 1000);
+    misty.TransitionLED(0, 0, 0, 0, 0, 140, "TransitOnce", 1000);
 
     misty.MoveHeadDegrees(getRandomInt(-20, 20), getRandomInt(-20, 20), getRandomInt(-20, 20), null, 1);
     misty.MoveArm("left", 0, 90);
@@ -28,7 +28,7 @@ function greetPerson(){
     misty.MoveArm("left", 0, 90);
     misty.Pause(1500);
         
-    misty.TransitionLED(0, 0, 140, 140, 0, 0, "TransitOnce", 1000);
+    misty.TransitionLED(0, 0, 140, 0, 0, 0, "TransitOnce", 1000);
     // center the head
     misty.Debug("Centering Head");
     misty.MoveHeadDegrees(0, 0, 0, null, 0.5);
@@ -72,6 +72,36 @@ function _trackFace(data){
         misty.MoveHeadDegrees(headPitch + ((pitchDown - pitchUp) / 66) * elevation, 0, 0, 100);
     }
 
+}
+
+function getSad(){
+    // function that makes misty react sadly
+    misty.PlayAudio("s_Grief.wav", 30);
+    misty.DisplayImage("e_Sadness.jpg");
+
+    misty.TransitionLED(0, 0, 0, 140, 0, 0, "TransitOnce", 1000);
+
+    misty.MoveHeadDegrees(getRandomInt(-20, 20), getRandomInt(-20, 20), getRandomInt(-20, 20), null, 1);
+    misty.MoveArm("left", 0, 90);
+    misty.Pause(1500);
+    misty.MoveHeadDegrees(getRandomInt(-10, 10), getRandomInt(-10, 10), getRandomInt(-10, 10), null, 0.5);
+    misty.MoveArm("left", 45, 90);
+    misty.Pause(1500);
+    misty.MoveHeadDegrees(getRandomInt(-15, 15), getRandomInt(-15, 15), getRandomInt(-15, 15), null, 0.3);
+    misty.MoveArm("left", 0, 90);
+    misty.Pause(1500);
+        
+    misty.TransitionLED(140, 0, 0, 0, 0, 0, "TransitOnce", 1000);
+    // center the head
+    misty.Debug("Centering Head");
+    misty.MoveHeadDegrees(0, 0, 0, null, 0.5);
+    // move arms to the start position
+    misty.MoveArm("left", 90, 90);
+    misty.MoveArm("right", 90, 90);
+
+    misty.DisplayImage("e_DefaultContent.jpg");
+
+    misty.Pause(3000);
 }
 
 
@@ -160,6 +190,20 @@ function _registerFaceRec(){
 	misty.RegisterEvent("FaceRec", "FaceRecognition", 1000, false); // RegisterEvent to register an event for face recognition (see callback function definition below)
 }
 
+// define a function that will increase the timer since a face was last seen in the background
+function _addTimeAway(){
+    // update the time_away variable
+    misty.set("time_away", misty.get("time_away")+1, false);
+
+    if (misty.get("time_away") > 10){ // if it has been more than ten seconds without seeing a face, misty will become sad
+        getSad();
+        misty.set("said_hi", false, false);
+    }
+
+    misty.RegisterTimerEvent("addTimeAway", 1000, false); // wait 1 second and call the function again
+}
+//_addTimeAway(); TODO get this to not make the robot freeze
+
 
 
 
@@ -177,6 +221,7 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
             greetPerson();
             misty.Set("said_hi", true, false); // set 'said_hi' to true
         }
+        misty.set("time_away", 0, false); // reset time_away to 0 seconds as a face has just been seen
 
         if (train_face) {
             // if this parameter is set to true, train on the unknown face
@@ -198,6 +243,7 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
             greetPerson();
             misty.Set("said_hi", true, false); // set 'said_hi' to true
         }
+        misty.set("time_away", 0, false); // reset time_away to 0 seconds as a face has just been seen
 
         _trackFace(data); // realign with face
         misty.RegisterTimerEvent("registerFaceRec", 200, false);
