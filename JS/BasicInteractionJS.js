@@ -193,16 +193,17 @@ function _registerFaceRec(){
 // define a function that will increase the timer since a face was last seen in the background
 function _addTimeAway(){
     // update the time_away variable
-    misty.set("time_away", misty.get("time_away")+1, false);
+    misty.Set("time_away", misty.Get("time_away")+1, false);
 
-    if (misty.get("time_away") > 10){ // if it has been more than ten seconds without seeing a face, misty will become sad
+    if (misty.Get("time_away") > 10){ // if it has been more than ten seconds without seeing a face, misty will become sad
         getSad();
-        misty.set("said_hi", false, false);
+        misty.Set("time_away", 0, false);
+        misty.Set("said_hi", false, false);
     }
 
     misty.RegisterTimerEvent("addTimeAway", 1000, false); // wait 1 second and call the function again
 }
-//_addTimeAway(); TODO get this to not make the robot freeze
+_addTimeAway(); //TODO get this to not make the robot freeze
 
 
 
@@ -221,7 +222,7 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
             greetPerson();
             misty.Set("said_hi", true, false); // set 'said_hi' to true
         }
-        misty.set("time_away", 0, false); // reset time_away to 0 seconds as a face has just been seen
+        misty.Set("time_away", 0, false); // reset time_away to 0 seconds as a face has just been seen
 
         if (train_face) {
             // if this parameter is set to true, train on the unknown face
@@ -243,7 +244,7 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
             greetPerson();
             misty.Set("said_hi", true, false); // set 'said_hi' to true
         }
-        misty.set("time_away", 0, false); // reset time_away to 0 seconds as a face has just been seen
+        misty.Set("time_away", 0, false); // reset time_away to 0 seconds as a face has just been seen
 
         _trackFace(data); // realign with face
         misty.RegisterTimerEvent("registerFaceRec", 200, false);
