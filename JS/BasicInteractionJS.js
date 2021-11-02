@@ -63,7 +63,7 @@ function _trackFace(data){
     const pitchUp = misty.Get("pitchUp");
     const pitchDown = misty.Get("pitchDown");
 
-
+    // TODO have misty rotate if the face is far enough to the side
     if (bearing != 0 && elevation != 0) { // move misty's head so that it is oriented towards the user's face
         misty.MoveHeadDegrees(headPitch + ((pitchDown - pitchUp) / 66) * elevation, 0, headYaw + ((yawLeft - yawRight) / 132) * bearing, 100); // adjust pitch and yaw based on the location of the face (100% velocity)
     } else if (bearing != 0) {
@@ -203,7 +203,7 @@ function _addTimeAway(){
 
     misty.RegisterTimerEvent("addTimeAway", 1000, false); // wait 1 second and call the function again
 }
-_addTimeAway(); //TODO get this to not make the robot freeze
+_addTimeAway();
 
 
 
