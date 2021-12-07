@@ -52,8 +52,8 @@ function _trackFace(data){
     // function to track a person's face once they have been identified and misty has said hello
 
     const faceDetected = data.PropertyTestResults[0].PropertyParent.Label; 
-    const bearing = data.PropertyTestResults[0].PropertyParent.Bearing; // -13 right and +13 left
-    const elevation = data.PropertyTestResults[0].PropertyParent.Elevation; // -13 up and +13 down
+    const bearing = data.PropertyTestResults[0].PropertyParent.Bearing/2; // -13 right and +13 left
+    const elevation = data.PropertyTestResults[0].PropertyParent.Elevation/2; // -13 up and +13 down
     misty.Debug(faceDetected + " detected");
 
     const headYaw = misty.Get("headYaw");
@@ -63,7 +63,7 @@ function _trackFace(data){
     const pitchUp = misty.Get("pitchUp");
     const pitchDown = misty.Get("pitchDown");
 
-    // TODO have misty rotate if the face is far enough to the side
+
     if (bearing != 0 && elevation != 0) { // move misty's head so that it is oriented towards the user's face
         misty.MoveHeadDegrees(headPitch + ((pitchDown - pitchUp) / 66) * elevation, 0, headYaw + ((yawLeft - yawRight) / 132) * bearing, 100); // adjust pitch and yaw based on the location of the face (100% velocity)
     } else if (bearing != 0) {
@@ -219,10 +219,11 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
         //misty.Debug(data.PropertyTestResults[0].PropertyParent.Distance.toString());
 
         if (!misty.Get("said_hi")){
-	    misty.Set("time_away", 0, false); // reset time_away to 0 seconds as a face has just been seen
+	          misty.Set("time_away", 0, false); // reset time_away to 0 seconds as a face has just been seen
             greetPerson();
             misty.Set("said_hi", true, false); // set 'said_hi' to true
         }
+        misty.Set("time_away", 0, false); // reset time_away to 0 seconds after saying hi
 
         if (train_face) {
             // if this parameter is set to true, train on the unknown face
@@ -233,7 +234,7 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
         }
 
         _trackFace(data); // realign with face
-        misty.RegisterTimerEvent("registerFaceRec", 200, false);
+        misty.RegisterTimerEvent("registerFaceRec", 800, false);
 	} 
 	else {
 		// Misty knows this person. Do something else.
@@ -241,13 +242,14 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
         misty.Debug(data.PropertyTestResults[0].PropertyParent.Distance.toString());
 
         if (!misty.Get("said_hi")){
-	    misty.Set("time_away", 0, false); // reset time_away to 0 seconds as a face has just been seen
+	          misty.Set("time_away", 0, false); // reset time_away to 0 seconds as a face has just been seen
             greetPerson();
             misty.Set("said_hi", true, false); // set 'said_hi' to true
         }
+        misty.Set("time_away", 0, false); // reset time_away to 0 seconds after saying hi
 
         _trackFace(data); // realign with face
-        misty.RegisterTimerEvent("registerFaceRec", 200, false);
+        misty.RegisterTimerEvent("registerFaceRec", 800, false);
   	}
 }
 misty.Debug("registering face rec event")
