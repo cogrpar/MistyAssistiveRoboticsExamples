@@ -66,7 +66,7 @@ function _trackFace(data){
     if (bearing != 0 && elevation != 0) { // move misty's head so that it is oriented towards the user's face
         misty.MoveHeadDegrees(headPitch + ((pitchDown - pitchUp) / 66) * elevation, 0, headYaw + ((yawLeft - yawRight) / 132) * bearing, 100); // adjust pitch and yaw based on the location of the face (100% velocity)
     } else if (bearing != 0) {
-        if (Math.abs(bearing) > 3){ // if the bearing is offset by more than 3 from center, rotate the entire robot to face the person
+        if (Math.abs(bearing) > 2){ // if the bearing is offset by more than 3 from center, rotate the entire robot to face the person
             var direction;
             if (bearing > 0) { // positive bearing
                 direction = 1;
