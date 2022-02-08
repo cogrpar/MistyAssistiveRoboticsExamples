@@ -18,20 +18,20 @@ function greetPerson(){
 
     misty.TransitionLED(0, 0, 0, 0, 0, 140, "TransitOnce", 1000);
 
-    misty.MoveHeadDegrees(getRandomInt(-20, 20), getRandomInt(-20, 20), getRandomInt(-20, 20), null, 1);
+    misty.MoveHeadDegrees(-40 + getRandomInt(-20, 20), getRandomInt(-20, 20), getRandomInt(-20, 20), null, 1);
     misty.MoveArm("left", 0, 90);
     misty.Pause(1500);
-    misty.MoveHeadDegrees(getRandomInt(-10, 10), getRandomInt(-10, 10), getRandomInt(-10, 10), null, 0.5);
+    misty.MoveHeadDegrees(-40 + getRandomInt(-10, 10), getRandomInt(-10, 10), getRandomInt(-10, 10), null, 0.5);
     misty.MoveArm("left", 45, 90);
     misty.Pause(1500);
-    misty.MoveHeadDegrees(getRandomInt(-15, 15), getRandomInt(-15, 15), getRandomInt(-15, 15), null, 0.3);
+    misty.MoveHeadDegrees(-40 + getRandomInt(-15, 15), getRandomInt(-15, 15), getRandomInt(-15, 15), null, 0.3);
     misty.MoveArm("left", 0, 90);
     misty.Pause(1500);
         
     misty.TransitionLED(0, 0, 140, 0, 0, 0, "TransitOnce", 1000);
     // center the head
     misty.Debug("Centering Head");
-    misty.MoveHeadDegrees(0, 0, 0, null, 0.5);
+    misty.MoveHeadDegrees(-40, 0, 0, null, 0.5);
     // move arms to the start position
     misty.MoveArm("left", 90, 90);
     misty.MoveArm("right", 90, 90);
@@ -66,7 +66,7 @@ function _trackFace(data){
     if (bearing != 0 && elevation != 0) { // move misty's head so that it is oriented towards the user's face
         misty.MoveHeadDegrees(headPitch + ((pitchDown - pitchUp) / 66) * elevation, 0, headYaw + ((yawLeft - yawRight) / 132) * bearing, 100); // adjust pitch and yaw based on the location of the face (100% velocity)
     } else if (bearing != 0) {
-        if (Math.abs(bearing) > 3){ // if the bearing is offset by more than 3 from center, rotate the entire robot to face the person
+        if (Math.abs(bearing) > 2){ // if the bearing is offset by more than 3 from center, rotate the entire robot to face the person
             var direction;
             if (bearing > 0) { // positive bearing
                 direction = 1;
@@ -75,7 +75,7 @@ function _trackFace(data){
                 direction = -1;
             }
             misty.DriveTime(0 /* linear velocity */, 100 * direction /* angular velocity */, 1500 /* time */); // rotate misty to the direction of the person
-            misty.MoveHeadDegrees(0 /* pitch */, 0 /* roll */, -((headYaw + (yawLeft - yawRight) / 132) * bearing)/4 /* yaw */, 100 /* velocity */); // rotate misty's head in the opposite direction to offset the rotation of the body
+            misty.MoveHeadDegrees(45 /* pitch */, 0 /* roll */, -((headYaw + (yawLeft - yawRight) / 132) * bearing)/4 /* yaw */, 100 /* velocity */); // rotate misty's head in the opposite direction to offset the rotation of the body
             misty.Pause(2000);
         }
         else {
@@ -94,20 +94,20 @@ function getSad(){
 
     misty.TransitionLED(0, 0, 0, 140, 0, 0, "TransitOnce", 1000);
 
-    misty.MoveHeadDegrees(getRandomInt(-20, 20), getRandomInt(-20, 20), getRandomInt(-20, 20), null, 1);
+    misty.MoveHeadDegrees(-40 + getRandomInt(-20, 20), getRandomInt(-20, 20), getRandomInt(-20, 20), null, 1);
     misty.MoveArm("left", 0, 90);
     misty.Pause(1500);
-    misty.MoveHeadDegrees(getRandomInt(-10, 10), getRandomInt(-10, 10), getRandomInt(-10, 10), null, 0.5);
+    misty.MoveHeadDegrees(-40 + getRandomInt(-10, 10), getRandomInt(-10, 10), getRandomInt(-10, 10), null, 0.5);
     misty.MoveArm("left", 45, 90);
     misty.Pause(1500);
-    misty.MoveHeadDegrees(getRandomInt(-15, 15), getRandomInt(-15, 15), getRandomInt(-15, 15), null, 0.3);
+    misty.MoveHeadDegrees(-40 + getRandomInt(-15, 15), getRandomInt(-15, 15), getRandomInt(-15, 15), null, 0.3);
     misty.MoveArm("left", 0, 90);
     misty.Pause(1500);
         
     misty.TransitionLED(140, 0, 0, 0, 0, 0, "TransitOnce", 1000);
     // center the head
     misty.Debug("Centering Head");
-    misty.MoveHeadDegrees(0, 0, 0, null, 0.5);
+    misty.MoveHeadDegrees(-40, 0, 0, null, 0.5);
     // move arms to the start position
     misty.MoveArm("left", 90, 90);
     misty.MoveArm("right", 90, 90);
@@ -134,9 +134,9 @@ function initiateFaceFollowVariables()
 
     // Global variable to store current pitch and yaw position of the head
     misty.Debug("Centering Head");
-    misty.MoveHeadDegrees(0, 0, 0, null, 0.5);
+    misty.MoveHeadDegrees(-40, 0, 0, null, 0.5);
     misty.Set("headYaw", 0.0, false);
-    misty.Set("headPitch", 0.0, false);
+    misty.Set("headPitch", -40.0, false);
 
     misty.Set("said_hi", false, false); // variable that determines if misty has said hi to the person yet
     misty.Set("time_away", 0, false); // variable that keeps track of how long misty has gone without seeing a face 
