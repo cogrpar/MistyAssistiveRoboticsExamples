@@ -2,15 +2,32 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b9fa7ad4-994a-4532-aa1c-4a1571bdb36b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/JS/BasicInteractionJS.js" beforeDir="false" afterPath="$PROJECT_DIR$/JS/BasicInteractionJS.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/misty_face_tracking/FaceTracking.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/video/VideoTools.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JS/BasicInteractionJS.json" beforeDir="false" afterPath="$PROJECT_DIR$/misty_basic_interaction_example/BasicInteractionJS.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    </list>
+    <list id="c1cb6aa5-f66c-419c-a249-227572d25c50" name="Changes by welsh.owen15" comment="">
+      <change beforePath="$PROJECT_DIR$/JS/BasicInteractionJS.js" beforeDir="false" afterPath="$PROJECT_DIR$/misty_basic_interaction_example/BasicInteractionJS.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="20yYTLsTyG6r18Vdj29ArIRDd6t" />
   <component name="ProjectViewState">
@@ -21,9 +38,15 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="codeWithMe.voiceChat.enabledByDefault" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="configurable.group.appearance" />
     <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -35,10 +58,23 @@
       <updated>1637018306776</updated>
       <workItem from="1637018310373" duration="991000" />
       <workItem from="1637019390619" duration="1829000" />
+      <workItem from="1646092343105" duration="152000" />
+      <workItem from="1646092542227" duration="5130000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

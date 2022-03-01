@@ -223,7 +223,7 @@ _addTimeAway();
 
 /* ---------------------- MAIN ---------------------- */
 
-function _FaceRec(data, train_face=false, name="person1") { // FaceRec function definition
+function _FaceRec(data, train_face=false, name="person1") { // FaceRec function definition TODO modify to utilize 'misty_face_tracking' library once complete
     misty.Debug("looking for face...")
     // Check if the FaceRec event was triggered by a stranger
     if (data.PropertyTestResults[0].PropertyParent.Label == "unknown person"){
