@@ -247,7 +247,8 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
         }
 
         _trackFace(data); // realign with face
-        misty.RegisterTimerEvent("registerFaceRec", 1000, false);
+        misty.RegisterTimerEvent("registerFaceRec", 800, false);
+
 	} 
 	else {
 		// Misty knows this person. Do something else.
@@ -262,7 +263,7 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
         misty.Set("time_away", 0, false); // reset time_away to 0 seconds after saying hi
 
         _trackFace(data); // realign with face
-        misty.RegisterTimerEvent("registerFaceRec", 1000, false);
+        misty.RegisterTimerEvent("registerFaceRec", 800, false);
   	}
 }
 misty.Debug("registering face rec event")
