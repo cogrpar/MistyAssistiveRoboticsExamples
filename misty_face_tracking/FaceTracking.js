@@ -1,5 +1,5 @@
 class FaceTracking {
-    constructor(basePitch=0) {
+    constructor(basePitch=0, skill="FaceDetect") {
         // Global variable to store current pitch and yaw position of the head
         // 'basePitch' is the default base angle of the pitch of the head (usually adjusted so to make misty look up if on the ground)
         misty.Debug("Centering Head");
@@ -48,39 +48,31 @@ class FaceTracking {
             return 0;
         }
         initiateHeadPhysicalLimitVariables();
-    }
-
-    // define a function to register the face recognition events
-    _registerFaceRec(){ // TODO see if this can be added to constructor to only run once to speed things up
-        misty.Debug("registered")
 
         misty.AddPropertyTest("FaceRec", "Label", "exists", "", "string"); // AddPropertyTest adds a test to determine which data will be sent to the event, in this case, if there is a person that goes with the detected face
         misty.RegisterEvent("FaceRec", "FaceRecognition", 1000, false); // RegisterEvent to register an event for face recognition (see callback function definition below)
+
+        function _FaceRec(data, call=skill) { // FaceRec callback function
+            let unknownFace = data.PropertyTestResults[0].PropertyParent.Label == "unknown person"; // bool that is true if this is an unknown face
+            if (call == "FaceDetect"){
+                // call face detect function passing data to it
+                this.FaceDetect(data, unknownFace);
+            }
+        }
     }
 
-    _FaceRec(data, train_face=false, name="person1") { // FaceRec function definition TODO modify to utilize 'misty_face_tracking' library once complete
-        misty.Debug("looking for face...")
-        // Check if the FaceRec event was triggered by a stranger
-        if (data.PropertyTestResults[0].PropertyParent.Label == "unknown person"){
-            // Misty doesn't recognize this person.
-            misty.Debug("unknown face detected!");
-
-            //_trackFace(data); // realign with face
-            misty.RegisterTimerEvent("registerFaceRec", 800, false);
-        }
-        else {
-            // Misty knows this person. Do something else.
-            misty.Debug("known face detected: " + data.PropertyTestResults[0].PropertyParent.Label);
-            // Misty doesn't recognize this person.
-            misty.Debug("unknown face detected!");
-
-            //_trackFace(data); // realign with face
-            misty.RegisterTimerEvent("registerFaceRec", 800, false);
+    FaceDetect (data, unknownFace){
+        // debugging function used to test if camera is able to recognize face
+        // to monitor filter misty debug messages by 'face_detect'
+        if (unknownFace) {
+            misty.Debug("face_detect: unknown face detected");
+            misty.Debug(data);
         }
     }
 
 }
 
+const test = new FaceTracking();
 
 /*
 function _trackFace(data){
