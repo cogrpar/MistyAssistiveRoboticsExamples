@@ -12,7 +12,10 @@ function getRandomInt(min, max) {
 
 function greetPerson(){
     // face detected, so change LED, move head, and wave
-    misty.PlayAudio("s_Amazement.wav", 30);
+    //misty.PlayAudio("s_Amazement.wav", 30);
+    // ---------------- TEMP talk to the governor demo ---------------- //
+    misty.Speak("hello there my friend jared how goes the crypto", 1.2);
+    misty.Pause(5000);
 
     //mirrorFace();
 
@@ -197,7 +200,7 @@ function _registerFaceRec(){
     // Starts face recognition
     misty.StartFaceRecognition();
 
-    misty.Debug("registered")
+    misty.Debug("registered");
 
     misty.AddPropertyTest("FaceRec", "Label", "exists", "", "string"); // AddPropertyTest adds a test to determine which data will be sent to the event, in this case, if there is a person that goes with the detected face
     misty.RegisterEvent("FaceRec", "FaceRecognition", 1000, false); // RegisterEvent to register an event for face recognition (see callback function definition below)
@@ -246,7 +249,7 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
             misty.Debug("Done!");
         }
 
-        _trackFace(data); // realign with face
+        //_trackFace(data); // realign with face
         misty.RegisterTimerEvent("registerFaceRec", 800, false);
     }
     else {
@@ -266,4 +269,5 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
     }
 }
 misty.Debug("registering face rec event")
+
 _registerFaceRec(); // call the register function

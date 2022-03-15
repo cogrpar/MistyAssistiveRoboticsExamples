@@ -1,5 +1,20 @@
 class FaceTracking {
-    constructor(basePitch=0, skill="FaceDetect") {
+
+    FaceDetect (data, unknownFace){
+        // debugging function used to test if camera is able to recognize face
+        // to monitor filter misty debug messages by 'face_detect'
+        if (unknownFace) {
+            misty.Debug("face_detect: unknown face detected");
+            misty.Debug(data);
+        }
+    }
+
+    ReadOnFaceDetect (data, callbackArgs){
+        // function that causes misty to speak the passed callback args on a face being detected
+        misty.Speak(callbackArgs[0]);
+    }
+
+    constructor(basePitch=0, skill="FaceDetect", callbackArgs=[]) {
         // Global variable to store current pitch and yaw position of the head
         // 'basePitch' is the default base angle of the pitch of the head (usually adjusted so to make misty look up if on the ground)
         misty.Debug("Centering Head");
@@ -49,8 +64,18 @@ class FaceTracking {
         }
         initiateHeadPhysicalLimitVariables();
 
-        misty.AddPropertyTest("FaceRec", "Label", "exists", "", "string"); // AddPropertyTest adds a test to determine which data will be sent to the event, in this case, if there is a person that goes with the detected face
-        misty.RegisterEvent("FaceRec", "FaceRecognition", 1000, false); // RegisterEvent to register an event for face recognition (see callback function definition below)
+        // define a function to register the face recognition events
+        function _registerFaceRec(){
+            // Cancels any face recognition that's currently underway
+            misty.StopFaceRecognition();
+            // Starts face recognition
+            misty.StartFaceRecognition();
+
+            misty.Debug("registered");
+
+            misty.AddPropertyTest("FaceRec", "Label", "exists", "", "string"); // AddPropertyTest adds a test to determine which data will be sent to the event, in this case, if there is a person that goes with the detected face
+            misty.RegisterEvent("FaceRec", "FaceRecognition", 1000, false); // RegisterEvent to register an event for face recognition (see callback function definition below)
+        }
 
         function _FaceRec(data, call=skill) { // FaceRec callback function
             let unknownFace = data.PropertyTestResults[0].PropertyParent.Label == "unknown person"; // bool that is true if this is an unknown face
@@ -58,21 +83,17 @@ class FaceTracking {
                 // call face detect function passing data to it
                 this.FaceDetect(data, unknownFace);
             }
+            misty.RegisterTimerEvent("registerFaceRec", 800, false);
         }
-    }
 
-    FaceDetect (data, unknownFace){
-        // debugging function used to test if camera is able to recognize face
-        // to monitor filter misty debug messages by 'face_detect'
-        if (unknownFace) {
-            misty.Debug("face_detect: unknown face detected");
-            misty.Debug(data);
-        }
+        _registerFaceRec(); // call the register function
     }
 
 }
 
-const test = new FaceTracking();
+const test = new FaceTracking(callbackArgs=["hello world"]);
+
+
 
 /*
 function _trackFace(data){

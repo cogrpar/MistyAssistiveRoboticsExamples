@@ -1,6 +1,4 @@
 console.log("no")
-misty.StartAvStreaming(null, 0, 0, 0, 0, 0, 0, null, null);
+misty.EnableAvStreamingService();
 
-while(true){
-    console.log("printing");
-}
+misty.StartAvStreaming("rtsp:6968", 640, 480, 30, 256000, 1000000, 48000, null, null);
