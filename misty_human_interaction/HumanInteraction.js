@@ -1,4 +1,4 @@
-class FaceTracking {
+class HumanInteraction {
 
     FaceDetect (data, unknownFace){
         // debugging function used to test if camera is able to recognize face
@@ -91,7 +91,7 @@ class FaceTracking {
 
 }
 
-const test = new FaceTracking(callbackArgs=["hello world"]);
+const test = new HumanInteraction(callbackArgs=["hello world"]);
 
 
 
