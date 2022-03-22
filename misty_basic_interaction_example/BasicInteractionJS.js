@@ -13,28 +13,25 @@ function getRandomInt(min, max) {
 function greetPerson(){
     // face detected, so change LED, move head, and wave
     //misty.PlayAudio("s_Amazement.wav", 30);
-    // ---------------- TEMP talk to the governor demo ---------------- //
-    misty.Speak("hello there my friend jared how goes the crypto", 1.2);
-    misty.Pause(5000);
 
     //mirrorFace();
 
     misty.TransitionLED(0, 0, 0, 0, 0, 140, "TransitOnce", 1000);
 
-    misty.MoveHeadDegrees(-40 + getRandomInt(-20, 20), getRandomInt(-20, 20), getRandomInt(-20, 20), null, 1);
+    misty.MoveHeadDegrees(-10 + getRandomInt(-20, 20), getRandomInt(-20, 20), getRandomInt(-20, 20), null, 1);
     misty.MoveArm("left", 0, 90);
     misty.Pause(1500);
-    misty.MoveHeadDegrees(-40 + getRandomInt(-10, 10), getRandomInt(-10, 10), getRandomInt(-10, 10), null, 0.5);
+    misty.MoveHeadDegrees(-10 + getRandomInt(-10, 10), getRandomInt(-10, 10), getRandomInt(-10, 10), null, 0.5);
     misty.MoveArm("left", 45, 90);
     misty.Pause(1500);
-    misty.MoveHeadDegrees(-40 + getRandomInt(-15, 15), getRandomInt(-15, 15), getRandomInt(-15, 15), null, 0.3);
+    misty.MoveHeadDegrees(-10 + getRandomInt(-15, 15), getRandomInt(-15, 15), getRandomInt(-15, 15), null, 0.3);
     misty.MoveArm("left", 0, 90);
     misty.Pause(1500);
 
     misty.TransitionLED(0, 0, 140, 0, 0, 0, "TransitOnce", 1000);
     // center the head
     misty.Debug("Centering Head");
-    misty.MoveHeadDegrees(-40, 0, 0, null, 0.5);
+    misty.MoveHeadDegrees(-10, 0, 0, null, 0.5);
     // move arms to the start position
     misty.MoveArm("left", 90, 90);
     misty.MoveArm("right", 90, 90);
@@ -42,6 +39,16 @@ function greetPerson(){
     //misty.DisplayImage("e_DefaultContent.jpg");
 
     misty.Pause(3000);
+}
+
+function greetVisitor (speech){
+    // ---------------- talk to a visitor demo ---------------- //
+    misty.SetDefaultVolume(50);
+    misty.Speak(speech, 1.2);
+    misty.Pause(100);
+
+    // call greet person for "fun" movements
+    greetPerson();
 }
 
 function mirrorFace(){
@@ -137,13 +144,14 @@ function initiateFaceFollowVariables()
 
     // Global variable to store current pitch and yaw position of the head
     misty.Debug("Centering Head");
-    misty.MoveHeadDegrees(-40, 0, 0, null, 0.5);
+    misty.MoveHeadDegrees(-10, 0, 0, null, 0.5);
     misty.Set("headYaw", 0.0, false);
-    misty.Set("headPitch", -40.0, false);
+    misty.Set("headPitch", -10.0, false);
 
     misty.Set("said_hi", false, false); // variable that determines if misty has said hi to the person yet
     misty.Set("time_away", 0, false); // variable that keeps track of how long misty has gone without seeing a face 
 }
+/*
 initiateFaceFollowVariables();
 // move arms to the start position
 misty.MoveArm("left", 90, 90);
@@ -219,7 +227,7 @@ function _addTimeAway(){
 
     misty.RegisterTimerEvent("addTimeAway", 1000, false); // wait 1 second and call the function again
 }
-_addTimeAway();
+_addTimeAway();*/
 
 
 
@@ -270,4 +278,13 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
 }
 misty.Debug("registering face rec event")
 
-_registerFaceRec(); // call the register function
+//_registerFaceRec(); // call the register function
+
+
+// ---------------- talk to the governor demo ---------------- //
+misty.RegisterEvent("Triggered", "BumpSensor", 200, true); // create an event that listens for any of the buttons on misty to be pressed
+misty.AddPropertyTest("Triggered", "isContacted", "==", true, "boolean"); // add a property test to only call _Triggered() when the button is pressed and not when it is released
+
+function _Triggered(data) { // callback function that is run when the button is pressed: greets the visitor
+    greetVisitor("Welcome to the Innovation Center Governor Polis and distinguished guests");
+}
