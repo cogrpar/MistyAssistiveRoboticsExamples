@@ -122,6 +122,8 @@ function getSad(){
 
 /* ---------------------- INIT ---------------------- */
 
+FACE_TRACKING_ONLY = false;
+
 // alert to notify user skill has started
 misty.Debug("face recognition and interaction skill started");
 
@@ -134,9 +136,9 @@ function initiateFaceFollowVariables()
 
     // Global variable to store current pitch and yaw position of the head
     misty.Debug("Centering Head");
-    misty.MoveHeadDegrees(-40, 0, 0, null, 0.5);
+    misty.MoveHeadDegrees(-0, 0, 0, null, 0.5);
     misty.Set("headYaw", 0.0, false);
-    misty.Set("headPitch", -40.0, false);
+    misty.Set("headPitch", -0.0, false);
 
     misty.Set("said_hi", false, false); // variable that determines if misty has said hi to the person yet
     misty.Set("time_away", 0, false); // variable that keeps track of how long misty has gone without seeing a face 
@@ -216,7 +218,9 @@ function _addTimeAway(){
 
     misty.RegisterTimerEvent("addTimeAway", 1000, false); // wait 1 second and call the function again
 }
-_addTimeAway();
+if (!FACE_TRACKING_ONLY){
+    _addTimeAway();
+}
 
 
 
@@ -231,12 +235,14 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
         misty.Debug("unknown face detected!");
         //misty.Debug(data.PropertyTestResults[0].PropertyParent.Distance.toString());
 
-        if (!misty.Get("said_hi")){
-            misty.Set("time_away", 0, false); // reset time_away to 0 seconds as a face has just been seen
-            greetPerson();
-            misty.Set("said_hi", true, false); // set 'said_hi' to true
+        if (!FACE_TRACKING_ONLY){
+            if (!misty.Get("said_hi")){
+                misty.Set("time_away", 0, false); // reset time_away to 0 seconds as a face has just been seen
+                greetPerson();
+                misty.Set("said_hi", true, false); // set 'said_hi' to true
+            }
+            misty.Set("time_away", 0, false); // reset time_away to 0 seconds after saying hi
         }
-        misty.Set("time_away", 0, false); // reset time_away to 0 seconds after saying hi
 
         if (train_face) {
             // if this parameter is set to true, train on the unknown face
