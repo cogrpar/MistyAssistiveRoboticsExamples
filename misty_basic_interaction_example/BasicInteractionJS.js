@@ -136,9 +136,9 @@ function initiateFaceFollowVariables()
 
     // Global variable to store current pitch and yaw position of the head
     misty.Debug("Centering Head");
-    misty.MoveHeadDegrees(-0, 0, 0, null, 0.5);
+    misty.MoveHeadDegrees(-40, 0, 0, null, 0.5);
     misty.Set("headYaw", 0.0, false);
-    misty.Set("headPitch", -0.0, false);
+    misty.Set("headPitch", -40.0, false);
 
     misty.Set("said_hi", false, false); // variable that determines if misty has said hi to the person yet
     misty.Set("time_away", 0, false); // variable that keeps track of how long misty has gone without seeing a face 
