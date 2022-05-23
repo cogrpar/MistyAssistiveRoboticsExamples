@@ -27,7 +27,7 @@ function greetPerson(){
     misty.MoveHeadDegrees(-40 + getRandomInt(-15, 15), getRandomInt(-15, 15), getRandomInt(-15, 15), null, 0.3);
     misty.MoveArm("left", 0, 90);
     misty.Pause(1500);
-        
+
     misty.TransitionLED(0, 0, 140, 0, 0, 0, "TransitOnce", 1000);
     // center the head
     misty.Debug("Centering Head");
@@ -51,7 +51,7 @@ function mirrorFace(){
 function _trackFace(data){
     // function to track a person's face once they have been identified and misty has said hello
 
-    const faceDetected = data.PropertyTestResults[0].PropertyParent.Label; 
+    const faceDetected = data.PropertyTestResults[0].PropertyParent.Label;
     const bearing = data.PropertyTestResults[0].PropertyParent.Bearing/2; // -13 right and +13 left
     const elevation = data.PropertyTestResults[0].PropertyParent.Elevation/2; // -13 up and +13 down
     misty.Debug(faceDetected + " detected");
@@ -63,10 +63,10 @@ function _trackFace(data){
     const pitchUp = misty.Get("pitchUp");
     const pitchDown = misty.Get("pitchDown");
 
-    if (bearing != 0 && elevation != 0) { // move misty's head so that it is oriented towards the user's face
+    if (bearing != 0 && !(elevation < 7 && elevation > -7)) { // move misty's head so that it is oriented towards the user's face (this gets triggered if misty needs to reorient the pitch)
         misty.MoveHeadDegrees(headPitch + ((pitchDown - pitchUp) / 66) * elevation, 0, headYaw + ((yawLeft - yawRight) / 132) * bearing, 100); // adjust pitch and yaw based on the location of the face (100% velocity)
     } else if (bearing != 0) {
-        if (Math.abs(bearing) > 2){ // if the bearing is offset by more than 3 from center, rotate the entire robot to face the person
+        if (Math.abs(bearing) > 2){ // if the bearing is offset by more than  from center, rotate the entire robot to face the person
             var direction;
             if (bearing > 0) { // positive bearing
                 direction = 1;
@@ -75,7 +75,7 @@ function _trackFace(data){
                 direction = -1;
             }
             misty.DriveTime(0 /* linear velocity */, 100 * direction /* angular velocity */, 1500 /* time */); // rotate misty to the direction of the person
-            misty.MoveHeadDegrees(45 /* pitch */, 0 /* roll */, -((headYaw + (yawLeft - yawRight) / 132) * bearing)/4 /* yaw */, 100 /* velocity */); // rotate misty's head in the opposite direction to offset the rotation of the body
+            misty.MoveHeadDegrees(5 /* pitch */, 0 /* roll */, -((headYaw + (yawLeft - yawRight) / 132) * bearing)/40 /* yaw */, 100 /* velocity */); // rotate misty's head in the opposite direction to offset the rotation of the body
             misty.Pause(2000);
         }
         else {
@@ -103,7 +103,7 @@ function getSad(){
     misty.MoveHeadDegrees(-40 + getRandomInt(-15, 15), getRandomInt(-15, 15), getRandomInt(-15, 15), null, 0.3);
     misty.MoveArm("left", 0, 90);
     misty.Pause(1500);
-        
+
     misty.TransitionLED(140, 0, 0, 0, 0, 0, "TransitOnce", 1000);
     // center the head
     misty.Debug("Centering Head");
@@ -122,11 +122,13 @@ function getSad(){
 
 /* ---------------------- INIT ---------------------- */
 
+FACE_TRACKING_ONLY = false;
+
 // alert to notify user skill has started
 misty.Debug("face recognition and interaction skill started");
 
 // center the head
-function initiateFaceFollowVariables() 
+function initiateFaceFollowVariables()
 {
     // Global variable to check whether Misty is searching for a face
     // or looking at a face
@@ -148,7 +150,7 @@ misty.MoveArm("right", 90, 90);
 
 
 // register listener for head yaw position from ActuatorPosition events
-function registerYaw() 
+function registerYaw()
 {
     misty.AddReturnProperty("headYaw", "SensorId");
     misty.AddReturnProperty("headYaw", "Value");
@@ -158,7 +160,7 @@ function registerYaw()
 registerYaw();
 
 // register listener for pitch position from ActuatorPosition events
-function registerPitch() 
+function registerPitch()
 {
     misty.AddReturnProperty("headPitch", "SensorId");
     misty.AddReturnProperty("headPitch", "Value");
@@ -168,17 +170,17 @@ function registerPitch()
 registerPitch();
 
 // head pitch and yaw callback functions for face tracking
-function _headYaw(data) 
+function _headYaw(data)
 {
     misty.Set("headYaw", data.AdditionalResults[1], false);
 }
-function _headPitch(data) 
+function _headPitch(data)
 {
     misty.Set("headPitch", data.AdditionalResults[1], false);
 }
 
 // set the limits of how misty's head can rotate for face tracking
-function initiateHeadPhysicalLimitVariables() 
+function initiateHeadPhysicalLimitVariables()
 {
     misty.Set("yawRight", -90.0, false);
     misty.Set("yawLeft", 90.0, false);
@@ -199,8 +201,8 @@ function _registerFaceRec(){
 
     misty.Debug("registered")
 
-	misty.AddPropertyTest("FaceRec", "Label", "exists", "", "string"); // AddPropertyTest adds a test to determine which data will be sent to the event, in this case, if there is a person that goes with the detected face
-	misty.RegisterEvent("FaceRec", "FaceRecognition", 1000, false); // RegisterEvent to register an event for face recognition (see callback function definition below)
+    misty.AddPropertyTest("FaceRec", "Label", "exists", "", "string"); // AddPropertyTest adds a test to determine which data will be sent to the event, in this case, if there is a person that goes with the detected face
+    misty.RegisterEvent("FaceRec", "FaceRecognition", 1000, false); // RegisterEvent to register an event for face recognition (see callback function definition below)
 }
 
 // define a function that will increase the timer since a face was last seen in the background
@@ -216,27 +218,31 @@ function _addTimeAway(){
 
     misty.RegisterTimerEvent("addTimeAway", 1000, false); // wait 1 second and call the function again
 }
-_addTimeAway();
+if (!FACE_TRACKING_ONLY){
+    _addTimeAway();
+}
 
 
 
 
 /* ---------------------- MAIN ---------------------- */
 
-function _FaceRec(data, train_face=false, name="person1") { // FaceRec function definition
+function _FaceRec(data, train_face=false, name="person1") { // FaceRec function definition TODO modify to utilize 'misty_face_tracking' library once complete
     misty.Debug("looking for face...")
-	// Check if the FaceRec event was triggered by a stranger
-	if (data.PropertyTestResults[0].PropertyParent.Label == "unknown person"){
-		// Misty doesn't recognize this person. 
+    // Check if the FaceRec event was triggered by a stranger
+    if (data.PropertyTestResults[0].PropertyParent.Label == "unknown person"){
+        // Misty doesn't recognize this person.
         misty.Debug("unknown face detected!");
         //misty.Debug(data.PropertyTestResults[0].PropertyParent.Distance.toString());
 
-        if (!misty.Get("said_hi")){
-	          misty.Set("time_away", 0, false); // reset time_away to 0 seconds as a face has just been seen
-            greetPerson();
-            misty.Set("said_hi", true, false); // set 'said_hi' to true
+        if (!FACE_TRACKING_ONLY){
+            if (!misty.Get("said_hi")){
+                misty.Set("time_away", 0, false); // reset time_away to 0 seconds as a face has just been seen
+                greetPerson();
+                misty.Set("said_hi", true, false); // set 'said_hi' to true
+            }
+            misty.Set("time_away", 0, false); // reset time_away to 0 seconds after saying hi
         }
-        misty.Set("time_away", 0, false); // reset time_away to 0 seconds after saying hi
 
         if (train_face) {
             // if this parameter is set to true, train on the unknown face
@@ -248,15 +254,14 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
 
         _trackFace(data); // realign with face
         misty.RegisterTimerEvent("registerFaceRec", 800, false);
-
-	} 
-	else {
-		// Misty knows this person. Do something else.
+    }
+    else {
+        // Misty knows this person. Do something else.
         misty.Debug("known face detected: " + data.PropertyTestResults[0].PropertyParent.Label);
         misty.Debug(data.PropertyTestResults[0].PropertyParent.Distance.toString());
 
         if (!misty.Get("said_hi")){
-	          misty.Set("time_away", 0, false); // reset time_away to 0 seconds as a face has just been seen
+            misty.Set("time_away", 0, false); // reset time_away to 0 seconds as a face has just been seen
             greetPerson();
             misty.Set("said_hi", true, false); // set 'said_hi' to true
         }
@@ -264,7 +269,7 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
 
         _trackFace(data); // realign with face
         misty.RegisterTimerEvent("registerFaceRec", 800, false);
-  	}
+    }
 }
 misty.Debug("registering face rec event")
 _registerFaceRec(); // call the register function
