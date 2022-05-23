@@ -254,16 +254,9 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
 
         _trackFace(data); // realign with face
         misty.RegisterTimerEvent("registerFaceRec", 800, false);
-<<<<<<< HEAD:misty_basic_interaction_example/BasicInteractionJS.js
     }
     else {
         // Misty knows this person. Do something else.
-=======
-
-	} 
-	else {
-		// Misty knows this person. Do something else.
->>>>>>> main:JS/BasicInteractionJS.js
         misty.Debug("known face detected: " + data.PropertyTestResults[0].PropertyParent.Label);
         misty.Debug(data.PropertyTestResults[0].PropertyParent.Distance.toString());
 
@@ -276,11 +269,7 @@ function _FaceRec(data, train_face=false, name="person1") { // FaceRec function 
 
         _trackFace(data); // realign with face
         misty.RegisterTimerEvent("registerFaceRec", 800, false);
-<<<<<<< HEAD:misty_basic_interaction_example/BasicInteractionJS.js
     }
-=======
-  	}
->>>>>>> main:JS/BasicInteractionJS.js
 }
 misty.Debug("registering face rec event")
 _registerFaceRec(); // call the register function
