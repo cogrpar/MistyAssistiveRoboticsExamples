@@ -1,3 +1,5 @@
+/* ----------------- MISTY DIAGNOSTIC CAPTURE ----------------- */
+
 // head pitch and yaw callback functions for face tracking
 function _headYaw(data) {
     misty.Set("headYaw", data.AdditionalResults[1], false);
@@ -6,6 +8,10 @@ function _headPitch(data) {
     misty.Set("headPitch", data.AdditionalResults[1], false);
 }
 
+
+
+
+/* ----------------- MISTY INTERACTION SKILLS ----------------- */
 function FaceDetect (data){
     // debugging function used to test if camera is able to recognize face
     // to monitor filter misty debug messages by 'face_detect'
@@ -25,32 +31,83 @@ function ReadOnFaceDetect (data, callbackArgs) {
     misty.Speak(callbackArgs[0]);
 }
 
+function TrackFace(data){
+    // function to track a person's face once they have been identified and misty has said hello
+
+    const faceDetected = data.PropertyTestResults[0].PropertyParent.Label;
+    const bearing = data.PropertyTestResults[0].PropertyParent.Bearing/2; // -13 right and +13 left
+    const elevation = data.PropertyTestResults[0].PropertyParent.Elevation/2; // -13 up and +13 down
+    misty.Debug(faceDetected + " detected");
+
+    const headYaw = misty.Get("headYaw");
+    const headPitch = misty.Get("headPitch");
+    const yawRight = misty.Get("yawRight");
+    const yawLeft = misty.Get("yawLeft");
+    const pitchUp = misty.Get("pitchUp");
+    const pitchDown = misty.Get("pitchDown");
+
+    if (bearing != 0 && !(elevation < 7 && elevation > -7)) { // move misty's head so that it is oriented towards the user's face (this gets triggered if misty needs to reorient the pitch)
+        misty.MoveHeadDegrees(headPitch + ((pitchDown - pitchUp) / 66) * elevation, 0, headYaw + ((yawLeft - yawRight) / 132) * bearing, 100); // adjust pitch and yaw based on the location of the face (100% velocity)
+    } else if (bearing != 0) {
+        if (Math.abs(bearing) > 2){ // if the bearing is offset by more than  from center, rotate the entire robot to face the person
+            var direction;
+            if (bearing > 0) { // positive bearing
+                direction = 1;
+            }
+            else { // negative bearing
+                direction = -1;
+            }
+            misty.DriveTime(0 /* linear velocity */, 100 * direction /* angular velocity */, 1500 /* time */); // rotate misty to the direction of the person
+            misty.MoveHeadDegrees(5 /* pitch */, 0 /* roll */, -((headYaw + (yawLeft - yawRight) / 132) * bearing)/40 /* yaw */, 100 /* velocity */); // rotate misty's head in the opposite direction to offset the rotation of the body
+            misty.Pause(2000);
+        }
+        else {
+            misty.MoveHeadDegrees(0, 0, headYaw + ((yawLeft - yawRight) / 132) * bearing, 100);
+        }
+    } else {
+        misty.MoveHeadDegrees(headPitch + ((pitchDown - pitchUp) / 66) * elevation, 0, 0, 100);
+    }
+
+}
+
+
+
+
+/* ------------------- DEFAULT CONFIGURATION ------------------ */
+let basePitch = 0;
+let skill = FaceDetect;
+let callbackArgs = [];
+
+
+
+
+/* ----------------------- LIBRARY CLASS ---------------------- */
 class HumanInteraction {
     constructor() {
         // arguments of the form: this.basePitch=0, skill=this.FaceDetect, callbackArgs=[]
-        let basePitch = 0;
-        let skill = Skills.FaceDetect;
-        let callbackArgs = [];
+        /*let basePitch = 0;
+        let skill = FaceDetect;
+        let callbackArgs = [];*/
 
         if (typeof arguments[0] == "number") {
             basePitch = arguments[0];
         }
         else if (typeof arguments[0] == "function") {
-            this.skill = arguments[0];
+            skill = arguments[0];
         }
         else if (typeof arguments[0] == "object") {
             callbackArgs = arguments[0];
         }
 
         if (typeof arguments[1] == "function") {
-            this.skill = arguments[1];
+            skill = arguments[1];
         }
         else if (typeof arguments[1] == "object") {
             callbackArgs = arguments[1];
         }
 
         if (typeof arguments[2]) {
-            let callbackArgs = arguments[2];
+            callbackArgs = arguments[2];
         }
 
         // Global variable to store current pitch and yaw position of the head
@@ -109,9 +166,14 @@ class HumanInteraction {
 
 }
 
+
+
+
+
+/* ------------------ MAIN CALLBACK FUNCTION ------------------ */
 function _FaceRec(data) { // FaceRec callback function
     misty.Debug("this part is working");
-    FaceDetect(data);
+    skill(data, callbackArgs);
 }
 
-const test = new HumanInteraction(0, HumanInteraction.FaceDetect);
+const test = new HumanInteraction(0, HumanInteraction.ReadOnFaceDetect, ["hello there, I saw your face!"]);
