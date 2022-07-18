@@ -11,8 +11,17 @@ function _headPitch(data) {
 
 
 
+//* ------------------- DEFAULT CONFIGURATION ------------------ */
+misty.Set("basePitch", [], false);
+misty.Set("skill", "FaceDetect", false);
+misty.Set("callbackArgs", [], false);
+misty.Set("faceData", null);
+
+
+
+
 /* ----------------- MISTY INTERACTION SKILLS ----------------- */
-function FaceDetect (data){
+function _FaceDetect (data=misty.Get("data")){
     // debugging function used to test if camera is able to recognize face
     // to monitor filter misty debug messages by 'face_detect'
     if (data.PropertyTestResults[0].PropertyParent.Label == "unknown person") {
@@ -26,12 +35,14 @@ function FaceDetect (data){
     misty.Debug("success");
 }
 
-function ReadOnFaceDetect (data, callbackArgs) {
+function _ReadOnFaceDetect(data=misty.Get("data"), callbackArgs=misty.Get("callbackArgs")) {
     // function that causes misty to speak the passed callback args on a face being detected
-    misty.Speak(callbackArgs[0]);
+    misty.Speak(callbackArgs); // Speak is still not working on misty
+    misty.Debug("speaking: " + callbackArgs);
+    misty.Pause(1000);
 }
 
-function TrackFace(data){
+function _TrackFace(data=misty.Get("data")){
     // function to track a person's face once they have been identified and misty has said hello
 
     const faceDetected = data.PropertyTestResults[0].PropertyParent.Label;
@@ -73,49 +84,37 @@ function TrackFace(data){
 
 
 
-/* ------------------- DEFAULT CONFIGURATION ------------------ */
-let basePitch = 0;
-let skill = FaceDetect;
-let callbackArgs = [];
-
-
-
-
 /* ----------------------- LIBRARY CLASS ---------------------- */
-class HumanInteraction {
-    constructor() {
+function constructor() {
         // arguments of the form: this.basePitch=0, skill=this.FaceDetect, callbackArgs=[]
-        /*let basePitch = 0;
-        let skill = FaceDetect;
-        let callbackArgs = [];*/
 
         if (typeof arguments[0] == "number") {
-            basePitch = arguments[0];
+            misty.Set("basePitch", arguments[0], false);
         }
-        else if (typeof arguments[0] == "function") {
-            skill = arguments[0];
+        else if (typeof arguments[0] == "string") {
+            misty.Set("skill", arguments[0], false);
         }
         else if (typeof arguments[0] == "object") {
-            callbackArgs = arguments[0];
+            misty.Set("callbackArgs", arguments[0], false);
         }
 
-        if (typeof arguments[1] == "function") {
-            skill = arguments[1];
+        if (typeof arguments[1] == "string") {
+            misty.Set("skill", arguments[1], false);
         }
         else if (typeof arguments[1] == "object") {
-            callbackArgs = arguments[1];
+            misty.Set("callbackArgs", arguments[1], false);
         }
 
         if (typeof arguments[2]) {
-            callbackArgs = arguments[2];
+            misty.Set("callbackArgs", arguments[2], false);
         }
 
         // Global variable to store current pitch and yaw position of the head
         // 'basePitch' is the default base angle of the pitch of the head (usually adjusted so to make misty look up if on the ground)
         misty.Debug("Centering Head");
-        misty.MoveHeadDegrees(-basePitch, 0, 0, null, 0.5);
+        misty.MoveHeadDegrees(-misty.Get("basePitch"), 0, 0, null, 0.5);
         misty.Set("headYaw", 0.0, false);
-        misty.Set("headPitch", -basePitch, false);
+        misty.Set("headPitch", -misty.Get("basePitch"), false);
 
         // register listener for head yaw position from ActuatorPosition events
         function registerYaw()
@@ -149,7 +148,7 @@ class HumanInteraction {
         }
         initiateHeadPhysicalLimitVariables();
 
-        // define a function to register the face recognition events
+        /*// define a function to register the face recognition events
         function registerFaceRec(){
             // Cancels any face recognition that's currently underway
             misty.StopFaceRecognition();
@@ -161,19 +160,33 @@ class HumanInteraction {
             misty.AddPropertyTest("FaceRec", "Label", "exists", "", "string"); // AddPropertyTest adds a test to determine which data will be sent to the event, in this case, if there is a person that goes with the detected face
             misty.RegisterEvent("FaceRec", "FaceRecognition", 1000, true); // RegisterEvent to register an event for face recognition (see callback function definition below)
         }
-        registerFaceRec();
-    }
-
+        registerFaceRec();*/
 }
 
+const test = constructor(0, "ReadOnFaceDetect", ["hello there, I saw your face!"]);
 
+// define a function to register the face recognition events
+function _registerFaceRec(){
+    // Cancels any face recognition that's currently underway
+    misty.StopFaceRecognition();
+    // Starts face recognition
+    misty.StartFaceRecognition();
+
+    misty.Debug("registered");
+
+    misty.AddPropertyTest("FaceRec", "Label", "exists", "", "string"); // AddPropertyTest adds a test to determine which data will be sent to the event, in this case, if there is a person that goes with the detected face
+    misty.RegisterEvent("FaceRec", "FaceRecognition", 1000, true); // RegisterEvent to register an event for face recognition (see callback function definition below)
+}
+//_registerFaceRec();
 
 
 
 /* ------------------ MAIN CALLBACK FUNCTION ------------------ */
 function _FaceRec(data) { // FaceRec callback function
-    misty.Debug("this part is working");
-    skill(data, callbackArgs);
+    misty.Debug("this part is working........");
+    misty.Debug("skill: " + misty.Get("skill"));
+    misty.RegisterTimerEvent(misty.Get("skill"), 800, false);
+    //misty.Pause(1000);
+    //misty.RegisterTimerEvent("registerFaceRec", 800, false);
 }
-
-const test = new HumanInteraction(0, HumanInteraction.ReadOnFaceDetect, ["hello there, I saw your face!"]);
+_registerFaceRec();
